@@ -111,7 +111,7 @@ function parseProcessName(process) {
 
 // Start listening on the PM2 BUS
 pm2.launchBus(function(err, bus) {
-
+    console.log(moduleConfig);
     // Listen for process logs
     if (moduleConfig.log) {
         bus.on('log:out', function(data) {
