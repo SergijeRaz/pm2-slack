@@ -133,7 +133,7 @@ pm2.launchBus(function(err, bus) {
             const name = parseProcessName(data.process);
             const parsedLog = parseIncommingLog(data.data);
             if  (moduleConfig['error-' + processName] === false) {
-                parsedLog = 'RADI, OD SUTRA VISE NE STIZU PORUKE!!!';
+                parsedLog.description = 'RADI, OD SUTRA VISE NE STIZU PORUKE!!!';
             }
             slackUrlRouter.addMessage({
                 name: name,
