@@ -132,7 +132,7 @@ pm2.launchBus(function(err, bus) {
             if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
             const name = parseProcessName(data.process);
             const parsedLog = parseIncommingLog(data.data);
-            if  (moduleConfig['error-' + processName] === false) {
+            if  (moduleConfig['error-' + name] === false) {
                 parsedLog.description = 'RADI, OD SUTRA VISE NE STIZU PORUKE!!!';
             }
             slackUrlRouter.addMessage({
