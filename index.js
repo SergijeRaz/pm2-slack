@@ -115,10 +115,13 @@ pm2.launchBus(function(err, bus) {
     if (moduleConfig.log) {
         bus.on('log:out', function(data) {
             if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
-
+            const name = parseProcessName(data.process);
+            if  (moduleConfig['out-' + name] === false) {
+               return;
+            }
             const parsedLog = parseIncommingLog(data.data);
             slackUrlRouter.addMessage({
-                name: parseProcessName(data.process),
+                name: name,
                 event: 'log',
                 description: parsedLog.description,
                 timestamp: parsedLog.timestamp,
@@ -130,10 +133,10 @@ pm2.launchBus(function(err, bus) {
     if (moduleConfig.error) {
         bus.on('log:err', function(data) {
             if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
-            const name = parseProcessName(data.process);
             const parsedLog = parseIncommingLog(data.data);
+            const name = parseProcessName(data.process);
             if  (moduleConfig['error-' + name] === false) {
-                parsedLog.description = 'RADI, OD SUTRA VISE NE STIZU PORUKE!!!';
+               return;
             }
             slackUrlRouter.addMessage({
                 name: name,
@@ -147,6 +150,10 @@ pm2.launchBus(function(err, bus) {
     // Listen for PM2 kill
     if (moduleConfig.kill) {
         bus.on('pm2:kill', function(data) {
+            const name = parseProcessName(data.process);
+            if  (moduleConfig['kill-' + name] === false) {
+               return;
+            }
             slackUrlRouter.addMessage({
                 name: 'PM2',
                 event: 'kill',
@@ -160,11 +167,14 @@ pm2.launchBus(function(err, bus) {
     if (moduleConfig.exception) {
         bus.on('process:exception', function(data) {
             if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
-
+            const name = parseProcessName(data.process);
+            if  (moduleConfig['exception-' + name] === false) {
+               return;
+            }
             // If it is instance of Error, use it. If type is unknown, stringify it.
             const description = (data.data && data.data.message) ? (data.data.code || '') + data.data.message :  JSON.stringify(data.data);
             slackUrlRouter.addMessage({
-                name: parseProcessName(data.process),
+                name: name,
                 event: 'exception',
                 description: description,
                 timestamp: Math.floor(Date.now() / 1000),
@@ -176,7 +186,10 @@ pm2.launchBus(function(err, bus) {
     bus.on('process:event', function(data) {
         if (!moduleConfig[data.event]) { return; } // This event type is disabled by configuration.
         if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
-
+        const name = parseProcessName(data.process);
+        if  (moduleConfig['data.event-' + name] === false) {
+           return;
+        }
         let description = null;
         switch (data.event) {
             case 'start':
@@ -191,7 +204,7 @@ pm2.launchBus(function(err, bus) {
 
         }
         slackUrlRouter.addMessage({
-            name: parseProcessName(data.process),
+            name: name,
             event: data.event,
             description: description,
             timestamp: Math.floor(Date.now() / 1000),
