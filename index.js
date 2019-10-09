@@ -116,7 +116,7 @@ pm2.launchBus(function(err, bus) {
         bus.on('log:out', function(data) {
             if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
             const name = parseProcessName(data.process);
-            if  (moduleConfig['out-' + data.process.name] === false) {
+            if  (moduleConfig['log-' + data.process.name] === false) {
                return;
             }
             const parsedLog = parseIncommingLog(data.data);
