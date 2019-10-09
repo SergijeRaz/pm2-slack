@@ -187,7 +187,7 @@ pm2.launchBus(function(err, bus) {
         if (!moduleConfig[data.event]) { return; } // This event type is disabled by configuration.
         if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
         const name = parseProcessName(data.process);
-        if  (moduleConfig['data.event-' + name] === false) {
+        if  (moduleConfig[data.event + '-' + name] === false) {
            return;
         }
         let description = null;
