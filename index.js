@@ -116,7 +116,7 @@ pm2.launchBus(function(err, bus) {
         bus.on('log:out', function(data) {
             if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
             const name = parseProcessName(data.process);
-            if  (moduleConfig['out-' + name] === false) {
+            if  (moduleConfig['out-' + data.process.name] === false) {
                return;
             }
             const parsedLog = parseIncommingLog(data.data);
@@ -135,7 +135,7 @@ pm2.launchBus(function(err, bus) {
             if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
             const parsedLog = parseIncommingLog(data.data);
             const name = parseProcessName(data.process);
-            if  (moduleConfig['error-' + name] === false) {
+            if  (moduleConfig['error-' + data.process.name] === false) {
                return;
             }
             slackUrlRouter.addMessage({
@@ -151,7 +151,7 @@ pm2.launchBus(function(err, bus) {
     if (moduleConfig.kill) {
         bus.on('pm2:kill', function(data) {
             const name = parseProcessName(data.process);
-            if  (moduleConfig['kill-' + name] === false) {
+            if  (moduleConfig['kill-' + data.process.name] === false) {
                return;
             }
             slackUrlRouter.addMessage({
@@ -168,7 +168,7 @@ pm2.launchBus(function(err, bus) {
         bus.on('process:exception', function(data) {
             if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
             const name = parseProcessName(data.process);
-            if  (moduleConfig['exception-' + name] === false) {
+            if  (moduleConfig['exception-' + data.process.name] === false) {
                return;
             }
             // If it is instance of Error, use it. If type is unknown, stringify it.
@@ -187,7 +187,7 @@ pm2.launchBus(function(err, bus) {
         if (!moduleConfig[data.event]) { return; } // This event type is disabled by configuration.
         if (data.process.name === 'pm2-slack') { return; } // Ignore messages of own module.
         const name = parseProcessName(data.process);
-        if  (moduleConfig[data.event + '-' + name] === false) {
+        if  (moduleConfig[data.event + '-' + data.process.name] === false) {
            return;
         }
         let description = null;
